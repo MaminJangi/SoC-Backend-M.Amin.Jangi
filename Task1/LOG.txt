@@ -1,0 +1,70 @@
+(myenv) PS C:\Users\USER\Desktop\Django\Bank> python manage.py populate_bank_accounts
+(myenv) PS C:\Users\USER\Desktop\Django\Bank> python manage.py shell
+>>> from BankAccount.models import BankAccount
+>>> from AccountHolder.models import AccountHolder
+>>> queryset = BankAccount.objects.select_related('account_holder').values('account_holder__last_name', 'balance')
+>>> queryset
+<QuerySet [{'account_holder__last_name': 'Machelle', 'balance': 25011506}, {'account_holder__last_name': 'Berton', 'balance': 817405551}, {'account_holder__last_name': 'Alwilda', 'balance': 853646626}, {'account_holder__last_name': 'Orvin', 'balance': 951105794}, {'account_holder__last_name': 'Julio', 'balance': 293753280}, {'account_holder__last_name': 'Darcie', 'balance': 927390909}, {'account_holder__last_name': 'Parthenia', 'balance': 303919381}, {'account_holder__last_name': 'Arman', 'balance': 190568340}, {'account_holder__last_name': 'Pleasant', 'balance': 468053973}, {'account_holder__last_name': 'Sunshine', 'balance': 368724197}, {'account_holder__last_name': 'Melba', 'balance': 653830854}, {'account_holder__last_name': 'Elsie', 'balance': 135691881}, {'account_holder__last_name': 'Pallie', 'balance': 89736862}, {'account_holder__last_name': 'Gust', 'balance': 344640872}, {'account_holder__last_name': 'Rodrigo', 'balance': 541087389}, {'account_holder__last_name': 'Stephanie', 'balance': 172625173}, {'account_holder__last_name': 'Stacey', 'balance': 375507221}, {'account_holder__last_name': 'Rich', 'balance': 576693744}, {'account_holder__last_name': 'Camilla', 'balance': 94280603}, {'account_holder__last_name': 'Myrtie', 'balance': 587846595}, '...(remaining elements truncated)...']>
+>>> max_balance_account = BankAccount.objects.order_by('balance').last()
+>>> max_balance_account
+<BankAccount: BankAccount object (15778)>
+>>> max_balance_account.balance
+999927112
+>>> five_min__balance_accounts = BankAccount.objects.order_by('balance')[:5]         
+>>> five_min__balance_accounts                                              
+<QuerySet [<BankAccount: BankAccount object (5067)>, <BankAccount: BankAccount object (10176)>, <BankAccount: BankAccount object (15329)>, <BankAccount: BankAccount object (1056)>, <BankAccount: BankAccount object (11965)>]>
+>>> for q in five_min__balance_accounts :
+...      print(q.balance)
+9793
+73668
+117788
+205516
+265110
+from BankAccount.models import BankAccount
+from_acc = BankAccount.objects.get(account_number = 7601663834190590)
+from_acc
+<BankAccount: BankAccount object (1)>
+>>> from_acc.balance
+25011506
+>>> dest_acc = BankAccount.objects.get(account_number = 2559664707486024)                
+>>> dest_acc                                                             
+<BankAccount: BankAccount object (2)>
+>>> dest_acc.balance
+817405551
+>>> from_acc.transfer(2559664707486024,100) 
+>>> from_acc.balance
+25011406
+>>> dest_acc.balance
+817405651
+>>> from_acc.transfer(7788573387922236,10)                  
+>>> from_acc.balance 
+25011396
+>>> dest_acc = BankAccount.objects.get(account_number = 7788573387922236)
+>>> dest_acc.balance                                                     
+853646636
+from django.db.models import F
+filtered_accounts = BankAccount.objects.filter(account_number__gt=F('balance'))
+filtered_accounts
+<QuerySet [<BankAccount: BankAccount object (1)>, <BankAccount: BankAccount object (2)>, <BankAccount: BankAccount object (3)>, <BankAccount: BankAccount object (4)>, <BankAccount: BankAccount object (5)>, <BankAccount: BankAccount object (6)>, <BankAccount: BankAccount object (7)>, <BankAccount: BankAccount object (8)>, <BankAccount: BankAccount object (9)>, <BankAccount: BankAccount object (10)>, <BankAccount: BankAccount object (11)>, <BankAccount: BankAccount object (12)>, <BankAccount: BankAccount object (13)>, <BankAccount: BankAccount object (14)>, <BankAccount: BankAccount object (15)>, <BankAccount: BankAccount object (16)>, <BankAccount: BankAccount object (17)>, <BankAccount: BankAccount object (18)>, <BankAccount: BankAccount object (19)>, <BankAccount: BankAccount object (20)>, '...(remaining elements truncated)...']>
+filtered_accounts = BankAccount.objects.filter(account_holder__NID__gt=F('balance'))  
+>>> filtered_accounts                                                                     
+<QuerySet [<BankAccount: BankAccount object (1)>, <BankAccount: BankAccount object (2)>, <BankAccount: BankAccount object (3)>, <BankAccount: BankAccount object (4)>, <BankAccount: BankAccount object (5)>, <BankAccount: BankAccount object (6)>, <BankAccount: BankAccount object (8)>, <BankAccount: BankAccount object (9)>, <BankAccount: BankAccount object (10)>, <BankAccount: BankAccount object (11)>, <BankAccount: BankAccount object (12)>, <BankAccount: BankAccount object (13)>, <BankAccount: BankAccount object (14)>, <BankAccount: BankAccount object (15)>, <BankAccount: BankAccount object (16)>, <BankAccount: BankAccount object (17)>, <BankAccount: BankAccount object (18)>, <BankAccount: BankAccount object (19)>, <BankAccount: BankAccount object (21)>, <BankAccount: BankAccount object (23)>, '...(remaining elements truncated)...']>
+>>> accounts_gt_2000000 =  BankAccount.objects.filter(balance__gt=2000000)
+>>> accounts_lt_1000000 = BankAccount.objects.filter(balance__lt=1000000) 
+>>> filtered_accs = accounts_gt_2000000  
+>>> filtered_accs = accounts_gt_2000000 | accounts_lt_1000000
+>>> filtered_accs 
+<QuerySet [<BankAccount: BankAccount object (1)>, <BankAccount: BankAccount object (2)>, <BankAccount: BankAccount object (3)>, <BankAccount: BankAccount object (4)>, <BankAccount: BankAccount object (6)>, <BankAccount: BankAccount object (7)>, <BankAccount: BankAccount object (8)>, <BankAccount: BankAccount object (9)>, <BankAccount: BankAccount object (10)>, <BankAccount: BankAccount object (11)>, <BankAccount: BankAccount object (12)>, <BankAccount: BankAccount object (13)>, <BankAccount: BankAccount object (14)>, <BankAccount: BankAccount object (15)>, <BankAccount: BankAccount object (16)>, <BankAccount: BankAccount object (17)>, <BankAccount: BankAccount object (18)>, <BankAccount: BankAccount object (19)>, <BankAccount: BankAccount object (20)>, <BankAccount: BankAccount object (21)>, '...(remaining elements truncated)...']>
+>>> existing_ids = filtered_accs.values_list('id',flat=True)
+>>> non_existig_ids = BankAccount.objects.exclude(id__in=existing_ids)
+>>> non_existig_ids = BankAccount.objects.exclude(id__in=existing_ids) 
+>>> non_existig_ids
+<QuerySet [<BankAccount: BankAccount object (5)>, <BankAccount: BankAccount object (564)>, <BankAccount: BankAccount object (815)>, <BankAccount: BankAccount object (1782)>, <BankAccount: BankAccount object (2205)>, <BankAccount: BankAccount object (2413)>, <BankAccount: BankAccount object (3034)>, <BankAccount: BankAccount object (4599)>, <BankAccount: BankAccount object (5088)>, <BankAccount: BankAccount object (6234)>, <BankAccount: BankAccount object (7181)>, <BankAccount: BankAccount object (7581)>, <BankAccount: BankAccount object (7652)>, <BankAccount: BankAccount object (7982)>, <BankAccount: BankAccount object (8397)>, <BankAccount: BankAccount object (12660)>, <BankAccount: BankAccount object (13828)>, <BankAccount: BankAccount object (14266)>, <BankAccount: BankAccount object (16277)>, <BankAccount: BankAccount object (17350)>, '...(remaining elements truncated)...']>   
+>>> non_existig_ids[0].balance
+1548993
+>>> from django.db.models import Sum
+>>> aggregated_balances = BankAccount.objects.select_related('account_holder').values('account_holder__first_name', 'account_holder__last_name').annotate(total_balance=Sum('balance')).order_by('account_holder__last_name', 'account_holder__first_name') 
+>>> aggregated_balances
+<QuerySet [{'account_holder__first_name': 'Ethie', 'account_holder__last_name': 'Aaliyah', 'total_balance': 222945417}, {'account_holder__first_name': 'Kaia', 'account_holder__last_name': 'Aaliyah', 'total_balance': 304608288}, {'account_holder__first_name': 'Lyle', 'account_holder__last_name': 'Aaliyah', 'total_balance': 1279542406}, {'account_holder__first_name': 'Aurthur', 'account_holder__last_name': 'Aarav', 'total_balance': 1723281468}, {'account_holder__first_name': 'Tiffanie', 'account_holder__last_name': 'Aarav', 'total_balance': 1909821157}, {'account_holder__first_name': 'Clark', 'account_holder__last_name': 'Aaron', 'total_balance': 825991013}, {'account_holder__first_name': 'Marcela', 'account_holder__last_name': 'Aaron', 'total_balance': 1472187950}, {'account_holder__first_name': 'Thalia', 'account_holder__last_name': 'Aaron', 'total_balance': 878833750}, {'account_holder__first_name': 'Tomie', 'account_holder__last_name': 'Aaron', 'total_balance': 905190520}, {'account_holder__first_name': 'Wava', 'account_holder__last_name': 'Aaron', 'total_balance': 1095017691}, {'account_holder__first_name': 'Nash', 'account_holder__last_name': 'Abagail', 'total_balance': 806783711}, {'account_holder__first_name': 'Donita', 'account_holder__last_name': 'Abb', 'total_balance': 869180138}, {'account_holder__first_name': 'Kendall', 'account_holder__last_name': 'Abb', 'total_balance': 90603897}, {'account_holder__first_name': 'Sheilah', 'account_holder__last_name': 'Abb', 'total_balance': 556839465}, {'account_holder__first_name': 'Alzina', 'account_holder__last_name': 'Abbie', 'total_balance': 69821426}, {'account_holder__first_name': 'Frederica', 'account_holder__last_name': 'Abbie', 'total_balance': 100586932}, {'account_holder__first_name': 'Jaymes', 'account_holder__last_name': 'Abbigail', 'total_balance': 260018620}, {'account_holder__first_name': 'Dwyane', 'account_holder__last_name': 'Abbott', 'total_balance': 1763329664}, {'account_holder__first_name': 'Jaunita', 'account_holder__last_name': 'Abbott', 'total_balance': 966643530}, {'account_holder__first_name': 'Latonya', 'account_holder__last_name': 'Abbott', 'total_balance': 940545837}, '...(remaining elements truncated)...']>
+>>> aggregated_balances.count()
+12610
